@@ -1,0 +1,587 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base>
+  <main class="console">
+    <div class="plate" data-reveal>
+      <!-- Faceplate header -->
+      <header class="head">
+        <div class="brand">
+          <span class="bezel" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
+              <circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
+            </svg>
+          </span>
+          <div class="brand-text">
+            <h1 class="wordmark">Encrypt<span>Me</span></h1>
+            <p class="spec mono">XChaCha20-Poly1305 · Argon2id · X25519</p>
+          </div>
+        </div>
+        <span class="lamp mono" title="No network requests are made">
+          <i class="led"></i>OFFLINE · 0&nbsp;NET
+        </span>
+      </header>
+
+      <p class="thesis">
+        Lock files to a password or a recipient's key — the whole operation runs
+        on this device. Nothing is uploaded, and a lost password can't be recovered.
+      </p>
+
+      <!-- Tabs -->
+      <div role="tablist" class="tabs">
+        <button data-tab="encrypt" class="tab">Encrypt</button>
+        <button data-tab="decrypt" class="tab">Decrypt</button>
+        <button data-tab="keys" class="tab">Keys</button>
+      </div>
+
+      <!-- ENCRYPT -->
+      <section data-panel="encrypt" class="panel flex-col gap-5">
+        <label class="slot" data-zone="encrypt">
+          <span class="slot-title">Drop files or click to choose</span>
+          <span class="slot-sub mono" data-files="encrypt">No files selected</span>
+          <input type="file" multiple class="sr-only" data-input="encrypt" />
+        </label>
+
+        <div class="field-group">
+          <span class="label">Mode</span>
+          <div class="seg">
+            <button data-mode="encrypt" data-value="password" class="modebtn">Password</button>
+            <button data-mode="encrypt" data-value="key" class="modebtn">Recipient key</button>
+          </div>
+        </div>
+
+        <div data-sub="encrypt-password" class="flex-col gap-3">
+          <div class="row">
+            <input type="password" data-el="enc-pw" placeholder="Password"
+              autocomplete="new-password" class="field" />
+            <button data-act="toggle-enc-pw" class="ghost" type="button">show</button>
+            <button data-act="gen-pw" class="ghost ghost-brass" type="button">generate</button>
+          </div>
+          <input type="password" data-el="enc-pw2" placeholder="Confirm password"
+            autocomplete="new-password" class="field" />
+          <div class="row items-center">
+            <div class="meter-track">
+              <div data-el="pw-meter" class="h-full w-0"></div>
+            </div>
+            <span data-el="pw-label" class="label tnum">—</span>
+          </div>
+          <label class="label range-row">
+            length
+            <input type="range" data-el="pw-len" min="12" max="48" value="20" class="range" />
+            <span data-el="pw-len-val" class="tnum">20</span>
+          </label>
+        </div>
+
+        <div data-sub="encrypt-key" class="hidden flex-col gap-2">
+          <textarea data-el="enc-recipient" rows="2"
+            placeholder="Recipient public key (base64)" class="field mono"></textarea>
+          <p class="hint">
+            Ask your recipient to generate a keypair in the Keys tab and send you their public key.
+          </p>
+        </div>
+
+        <button data-act="encrypt" class="btn">Encrypt</button>
+      </section>
+
+      <!-- DECRYPT -->
+      <section data-panel="decrypt" class="panel hidden flex-col gap-5">
+        <label class="slot" data-zone="decrypt">
+          <span class="slot-title">Drop a .enc file or click to choose</span>
+          <span class="slot-sub mono" data-files="decrypt">No file selected</span>
+          <input type="file" class="sr-only" data-input="decrypt" />
+        </label>
+
+        <p data-el="dec-detected" class="detected mono hidden"></p>
+
+        <div data-sub="decrypt-password" class="row">
+          <input type="password" data-el="dec-pw" placeholder="Password"
+            autocomplete="off" class="field" />
+          <button data-act="toggle-dec-pw" class="ghost" type="button">show</button>
+        </div>
+
+        <div data-sub="decrypt-key" class="hidden flex-col gap-2">
+          <textarea data-el="dec-pub" rows="2" placeholder="Your public key (base64)"
+            class="field mono"></textarea>
+          <textarea data-el="dec-sec" rows="2" placeholder="Your secret key (base64)"
+            class="field mono"></textarea>
+        </div>
+
+        <button data-act="decrypt" class="btn">Decrypt</button>
+      </section>
+
+      <!-- KEYS -->
+      <section data-panel="keys" class="panel hidden flex-col gap-5">
+        <p class="hint">
+          Generate an X25519 keypair. Share your <b>public</b> key so others can encrypt
+          files to you. Keep your <b>secret</b> key private — anyone with it can decrypt
+          those files.
+        </p>
+        <button data-act="genkeys" class="btn">Generate keypair</button>
+
+        <div data-el="keys-out" class="hidden flex-col gap-5">
+          <div class="field-group">
+            <span class="label">Public key</span>
+            <textarea data-el="out-pub" rows="2" readonly class="field mono"></textarea>
+            <div class="row">
+              <button data-act="copy-pub" class="ghost">copy</button>
+              <button data-act="dl-pub" class="ghost">download</button>
+            </div>
+          </div>
+          <div class="field-group danger-zone">
+            <span class="label label-danger">⚠ Secret key — keep private</span>
+            <textarea data-el="out-sec" rows="2" readonly class="field mono"></textarea>
+            <div class="row">
+              <button data-act="reveal-sec" class="ghost">reveal</button>
+              <button data-act="copy-sec" class="ghost">copy</button>
+              <button data-act="dl-sec" class="ghost">download</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status / progress (shared) -->
+      <div data-el="status" class="status hidden flex-col gap-2">
+        <div class="row items-center justify-between">
+          <span data-el="status-text" class="label tnum"></span>
+          <button data-act="cancel" class="ghost">cancel</button>
+        </div>
+        <!-- signature: the chunk-stream magazine -->
+        <div class="stream">
+          <div data-el="bar" class="streamfill h-full w-0"></div>
+        </div>
+      </div>
+
+      <div data-el="result" class="hidden"></div>
+    </div>
+
+    <footer class="foot mono">
+      no analytics · no cookies · open source · inspired by hat.sh
+    </footer>
+  </main>
+</Base>
+
+<script>
+  import { initApp } from "../scripts/app";
+  initApp();
+</script>
+
+<style>
+  .console {
+    width: 100%;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: clamp(1.25rem, 4vw, 3rem) 1.25rem 2.5rem;
+  }
+
+  /* The instrument faceplate */
+  .plate {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    border-radius: 16px;
+    background: linear-gradient(180deg, var(--plate), var(--plate-2));
+    border: 1px solid var(--line-strong);
+    box-shadow:
+      0 1px 0 color-mix(in srgb, #fff 18%, transparent) inset,
+      0 24px 60px -28px var(--shadow);
+  }
+  [data-reveal] {
+    animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Header */
+  .head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .bezel {
+    display: inline-flex;
+    height: 2.5rem;
+    width: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--brass);
+    background: radial-gradient(120% 120% at 30% 20%, var(--brass-soft), transparent 70%),
+      var(--inset);
+    border: 1px solid var(--line-strong);
+    box-shadow: inset 0 1px 2px var(--shadow);
+  }
+  .bezel svg {
+    height: 1.35rem;
+    width: 1.35rem;
+  }
+  .wordmark {
+    font-family: ui-monospace, monospace;
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .wordmark span {
+    color: var(--brass-text);
+  }
+  .spec {
+    margin-top: 0.4rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .lamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .led {
+    height: 7px;
+    width: 7px;
+    border-radius: 50%;
+    background: var(--led);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--led) 60%, transparent);
+    animation: blink 2.4s ease-in-out infinite;
+  }
+
+  .thesis {
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 46ch;
+  }
+
+  /* Tabs + segmented mode control */
+  .tabs,
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    padding: 3px;
+    border-radius: 11px;
+    background: var(--inset);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 3px var(--shadow);
+  }
+  .seg {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .tab,
+  .modebtn {
+    border-radius: 8px;
+    padding: 0.55rem 0.5rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.74rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: transparent;
+    transition: color 0.15s, background 0.15s;
+  }
+  .tab:hover,
+  .modebtn:hover {
+    color: var(--ink);
+  }
+  .tab[aria-selected="true"],
+  .modebtn[aria-selected="true"] {
+    color: var(--brass-text);
+    background: linear-gradient(180deg, var(--plate), var(--plate-2));
+    box-shadow: 0 1px 2px var(--shadow), 0 0 0 1px var(--line) inset;
+  }
+
+  /* Layout helpers */
+  .panel {
+    display: flex;
+  }
+  .panel.hidden {
+    display: none;
+  }
+  .flex-col {
+    display: flex;
+    flex-direction: column;
+  }
+  .gap-2 {
+    gap: 0.5rem;
+  }
+  .gap-3 {
+    gap: 0.75rem;
+  }
+  .gap-5 {
+    gap: 1.25rem;
+  }
+  .row {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .items-center {
+    align-items: center;
+  }
+  .justify-between {
+    justify-content: space-between;
+  }
+  .hidden {
+    display: none;
+  }
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  [data-sub].flex {
+    display: flex;
+  }
+
+  .label {
+    font-family: ui-monospace, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .hint {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .hint b {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* Insert slot (dropzone) */
+  .slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 2.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 12px;
+    background: var(--inset);
+    border: 1.5px dashed var(--line-strong);
+    box-shadow: inset 0 1px 3px var(--shadow);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .slot:hover,
+  .slot.is-drag {
+    border-color: var(--brass);
+  }
+  .slot.is-drag {
+    background: var(--brass-soft);
+  }
+  .slot-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .slot-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Recessed fields */
+  .field {
+    width: 100%;
+    border-radius: 9px;
+    padding: 0.62rem 0.78rem;
+    font-size: 0.85rem;
+    color: var(--ink);
+    background: var(--inset);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 2px var(--shadow);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  textarea.field {
+    resize: vertical;
+    line-height: 1.5;
+    word-break: break-all;
+  }
+  .field::placeholder {
+    color: color-mix(in srgb, var(--muted) 80%, transparent);
+  }
+  .field:focus {
+    border-color: var(--brass);
+    box-shadow: inset 0 1px 2px var(--shadow), 0 0 0 3px var(--brass-soft);
+  }
+  .row > .field {
+    flex: 1;
+  }
+
+  /* Strength meter track (fill is styled by JS via Tailwind utilities) */
+  .meter-track {
+    flex: 1;
+    height: 7px;
+    border-radius: 999px;
+    background: var(--inset);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .range-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .range {
+    flex: 1;
+    accent-color: var(--brass);
+  }
+
+  /* Buttons */
+  .btn {
+    border-radius: 10px;
+    padding: 0.72rem 1rem;
+    font-weight: 600;
+    font-size: 0.92rem;
+    letter-spacing: 0.01em;
+    color: var(--on-brass);
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--brass) 92%, white),
+      var(--brass));
+    border: 1px solid color-mix(in srgb, var(--brass) 70%, black);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent),
+      0 2px 6px -2px var(--shadow);
+    transition: filter 0.15s, transform 0.05s;
+  }
+  .btn:hover {
+    filter: brightness(1.05);
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ghost {
+    border-radius: 8px;
+    padding: 0.42rem 0.7rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .ghost:hover {
+    color: var(--brass-text);
+    border-color: var(--brass);
+  }
+  .ghost-brass {
+    color: var(--brass-text);
+    border-color: color-mix(in srgb, var(--brass) 45%, transparent);
+  }
+
+  .detected {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brass-text);
+  }
+
+  .danger-zone .field:focus {
+    border-color: var(--danger);
+    box-shadow: inset 0 1px 2px var(--shadow),
+      0 0 0 3px color-mix(in srgb, var(--danger) 22%, transparent);
+  }
+  .label-danger {
+    color: var(--danger);
+  }
+
+  /* Signature: the chunk-stream magazine */
+  .status {
+    gap: 0.6rem;
+  }
+  .stream {
+    height: 14px;
+    border-radius: 5px;
+    padding: 0;
+    background-color: var(--inset);
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--line) 0 9px,
+      transparent 9px 12px
+    );
+    background-size: 12px 100%;
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 2px var(--shadow);
+    overflow: hidden;
+  }
+  .streamfill {
+    background-image: repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--brass) 88%, white) 0 9px,
+      transparent 9px 12px
+    );
+    background-size: 12px 100%;
+    box-shadow: 0 0 8px -1px var(--brass-soft);
+    transition: width 0.15s linear;
+  }
+
+  /* Result banner (base; ok/error palette is set inline by JS too) */
+  [data-el="result"]:not(.hidden) {
+    display: block;
+    border-radius: 9px;
+    padding: 0.7rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .foot {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.64rem;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--muted) 75%, transparent);
+  }
+
+  /* Motion */
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes blink {
+    0%, 100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--led) 55%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 4px transparent;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-reveal],
+    .led,
+    .streamfill,
+    .btn {
+      animation: none;
+      transition: none;
+    }
+  }
+</style>

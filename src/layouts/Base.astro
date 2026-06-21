@@ -1,0 +1,42 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+}
+const { title = "EncryptMe" } = Astro.props;
+
+// Strict CSP. Everything is self-hosted and the libsodium WASM is inlined
+// (sumo build), so no network at runtime. 'wasm-unsafe-eval' is needed to
+// instantiate the WASM module; scripts are external modules (no inline).
+const csp = [
+  "default-src 'none'",
+  "script-src 'self' 'wasm-unsafe-eval'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "connect-src 'none'",
+  "manifest-src 'self'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join("; ");
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <meta http-equiv="Content-Security-Policy" content={csp} />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      name="description"
+      content="Encrypt and decrypt files entirely in your browser. Nothing is uploaded."
+    />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-full">
+    <slot />
+  </body>
+</html>
