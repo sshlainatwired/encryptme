@@ -165,13 +165,17 @@ export function initApp(): void {
   };
   encPw.addEventListener("input", updateMeter);
 
-  $('[data-act="toggle-enc-pw"]')!.addEventListener("click", () => {
+  const encToggle = $('[data-act="toggle-enc-pw"]')!;
+  encToggle.addEventListener("click", () => {
     const show = encPw.type === "password";
     encPw.type = encPw2.type = show ? "text" : "password";
+    encToggle.textContent = show ? "hide" : "show";
   });
-  $('[data-act="toggle-dec-pw"]')!.addEventListener("click", () => {
+  const decToggle = $('[data-act="toggle-dec-pw"]')!;
+  decToggle.addEventListener("click", () => {
     const f = $<HTMLInputElement>('[data-el="dec-pw"]')!;
     f.type = f.type === "password" ? "text" : "password";
+    decToggle.textContent = f.type === "password" ? "show" : "hide";
   });
 
   const pwLen = $<HTMLInputElement>('[data-el="pw-len"]')!;
