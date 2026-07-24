@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # App dependencies (package.json). Bun-managed; Dependabot bumps the npm
+  # manifest and CI's frozen-lockfile install catches any lockfile drift.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - javascript
+    groups:
+      npm-deps:
+        patterns:
+          - "*"
+
+  # Pinned actions in .github/workflows (checkout, setup-bun, cache).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels:
+      - dependencies
+      - github-actions
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
