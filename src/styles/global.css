@@ -1,34 +1,52 @@
 @import "tailwindcss";
 
-/* ── Vault Instrument theme (dark only) ─────────────────────────────────
-   Warm graphite faceplate, a single aged-brass signal, recessed instrument
-   surfaces. System fonts only (no remote/self-hosted files). */
+/* ── The Cipher Ledger ───────────────────────────────────────────────────
+   The subject is a byte-exact binary container, written and read entirely
+   on-device (see FILE_FORMAT.md). The register is an accounting ledger:
+   ruled paper, ink-stamped entries, everything set in a single monospace
+   family because a ledger's columns must line up — that's the actual
+   reason for the choice, not a "hacker" affectation. Two lighting states:
+   a daylight page and the same page under a desk lamp at night. System
+   fonts only (no remote/self-hosted files, keeps the app's zero-network
+   guarantee honest). */
 
 :root {
   color-scheme: dark;
 
-  --bg: #13110c;
-  --bg-glow: rgba(216, 171, 78, 0.1);
-  --plate: #1d1812;
-  --plate-2: #181410;
-  --inset: #100d09;
-  --ink: #ece5d5;
-  --muted: #9a9080;
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.16);
-  --brass: #d8ab4e;
-  --brass-text: #e2ba5d;
-  --brass-soft: rgba(216, 171, 78, 0.16);
-  --on-brass: #1a1305;
-  --danger: #db6a51;
-  --led: #4fc187;
-  --shadow: rgba(0, 0, 0, 0.5);
+  --paper: #16120d; /* the desk the ledger sits on, at night */
+  --page: #201a13; /* the ledger sheet itself */
+  --page-recessed: #150f0a; /* sunken fields, ruled table stripes */
+  --ink: #e9ddc3; /* pencil/typewriter ink under lamp light */
+  --muted: #a2957c;
+  --rule: #3c3122;
+  --rule-strong: #56462f;
+  --moss: #86a170; /* "posted" ink stamp — the one warm-cool accent */
+  --moss-ink: #11170d;
+  --gold: #c9a04c; /* mid-strength meter tone, aged brass ink */
+  --rust: #c17457; /* "void" ink stamp */
+  --shadow: rgba(0, 0, 0, 0.6);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --paper: #e7dcc2; /* the desk, in daylight */
+  --page: #f7f0dd; /* the ledger sheet */
+  --page-recessed: #efe4c9;
+  --ink: #2b2015;
+  --muted: #766a51;
+  --rule: #d2c4a1;
+  --rule-strong: #b6a67d;
+  --moss: #45593a;
+  --moss-ink: #f6f2e4;
+  --gold: #93672a;
+  --rust: #833c28;
+  --shadow: rgba(43, 32, 21, 0.22);
 }
 
 html {
   font-family:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+    ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
 }
 .mono,
 code,
@@ -38,21 +56,21 @@ textarea {
 }
 
 body {
-  background-color: var(--bg);
+  min-height: 100%;
+  background-color: var(--paper);
   color: var(--ink);
-  /* faint machined-faceplate hatch + a soft brass glow toward the top */
-  background-image:
-    radial-gradient(120% 70% at 50% -10%, var(--bg-glow), transparent 60%),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 3px,
-      color-mix(in srgb, var(--ink) 2%, transparent) 3px 4px
-    );
+  /* a faint laid-paper texture: fine horizontal chain lines */
+  background-image: repeating-linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ink) 3%, transparent) 0 1px,
+    transparent 1px 6px
+  );
   background-attachment: fixed;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 ::selection {
-  background: var(--brass-soft);
+  background: color-mix(in srgb, var(--moss) 35%, transparent);
 }
 
 ::-webkit-scrollbar {
@@ -60,6 +78,6 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--line-strong);
-  border-radius: 6px;
+  background: var(--rule-strong);
+  border-radius: 2px;
 }

@@ -3,33 +3,36 @@ import Base from "../layouts/Base.astro";
 ---
 
 <Base>
-  <main class="console">
-    <div class="plate" data-reveal>
-      <!-- Faceplate header -->
-      <header class="head">
-        <div class="brand">
-          <span class="bezel" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" />
-              <circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none" />
-            </svg>
-          </span>
-          <div class="brand-text">
-            <h1 class="wordmark">Encrypt<span>Me</span></h1>
-            <p class="spec mono">XChaCha20-Poly1305 · Argon2id · X25519</p>
-          </div>
-        </div>
-        <span class="lamp mono" title="No network requests are made">
-          <i class="led"></i>OFFLINE · 0&nbsp;NET
+  <main class="ledger-wrap">
+    <!-- Ledger header -->
+    <header class="masthead" data-reveal>
+      <div class="mh-left">
+        <span class="mh-seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="4.5" y="10.5" width="15" height="9.5" rx="1.2" />
+            <path d="M7.8 10.5V7.6a4.2 4.2 0 0 1 8.4 0v2.9" />
+          </svg>
         </span>
-      </header>
+        <div class="mh-name">
+          <span class="mh-title">EncryptMe</span>
+        </div>
+      </div>
+      <div class="mh-right">
+        <button type="button" class="lamp-toggle" data-act="toggle-theme" aria-label="Switch page lighting">
+          <svg class="ic-lamp-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M12 3v2.4M4.6 6.6l1.7 1.7M19.4 6.6l-1.7 1.7M3 13h2.6M18.4 13H21" />
+            <path d="M8.5 13a3.5 3.5 0 1 1 7 0c0 2.1-1.6 2.6-1.9 4.3H10.4C10.1 15.6 8.5 15.1 8.5 13Z" />
+            <path d="M10.2 20h3.6" />
+          </svg>
+          <svg class="ic-lamp-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
 
-      <p class="thesis">
-        Lock files to a password or a recipient's key — the whole operation runs
-        on this device. Nothing is uploaded, and a lost password can't be recovered.
-      </p>
-
-      <!-- Tabs -->
+    <!-- Console -->
+    <div class="console" data-reveal>
       <div role="tablist" class="tabs">
         <button data-tab="encrypt" class="tab">Encrypt</button>
         <button data-tab="decrypt" class="tab">Decrypt</button>
@@ -39,16 +42,16 @@ import Base from "../layouts/Base.astro";
       <!-- ENCRYPT -->
       <section data-panel="encrypt" class="panel flex-col gap-5">
         <label class="slot" data-zone="encrypt">
-          <span class="slot-title">Drop files or click to choose</span>
-          <span class="slot-sub mono" data-files="encrypt">No files selected</span>
+          <span class="slot-title">Drop files here, or click to choose</span>
+          <span class="slot-sub" data-files="encrypt">No files selected</span>
           <input type="file" multiple class="sr-only" data-input="encrypt" />
         </label>
 
         <div class="field-group">
-          <span class="label">Mode</span>
+          <span class="label">Lock with</span>
           <div class="seg">
             <button data-mode="encrypt" data-value="password" class="modebtn">Password</button>
-            <button data-mode="encrypt" data-value="key" class="modebtn">Recipient key</button>
+            <button data-mode="encrypt" data-value="key" class="modebtn">Recipient's key</button>
           </div>
         </div>
 
@@ -57,15 +60,15 @@ import Base from "../layouts/Base.astro";
             <input type="password" data-el="enc-pw" placeholder="Password"
               autocomplete="new-password" class="field" />
             <button data-act="toggle-enc-pw" class="ghost" type="button">show</button>
-            <button data-act="gen-pw" class="ghost ghost-brass" type="button">generate</button>
+            <button data-act="gen-pw" class="ghost ghost-moss" type="button">generate</button>
           </div>
           <input type="password" data-el="enc-pw2" placeholder="Confirm password"
             autocomplete="new-password" class="field" />
           <div class="row items-center">
             <div class="meter-track">
-              <div data-el="pw-meter" class="h-full w-0"></div>
+              <div data-el="pw-meter" class="meter-fill w-0"></div>
             </div>
-            <span data-el="pw-label" class="label tnum">—</span>
+            <span data-el="pw-label" class="label tnum">&mdash;</span>
           </div>
           <label class="label range-row">
             length
@@ -76,9 +79,9 @@ import Base from "../layouts/Base.astro";
 
         <div data-sub="encrypt-key" class="hidden flex-col gap-2">
           <textarea data-el="enc-recipient" rows="2"
-            placeholder="Recipient public key (base64)" class="field mono"></textarea>
+            placeholder="Recipient public key (base64)" class="field"></textarea>
           <p class="hint">
-            Ask your recipient to generate a keypair in the Keys tab and send you their public key.
+            Ask your recipient to open the Keys tab, generate a keypair, and send you their public key.
           </p>
         </div>
 
@@ -88,12 +91,12 @@ import Base from "../layouts/Base.astro";
       <!-- DECRYPT -->
       <section data-panel="decrypt" class="panel hidden flex-col gap-5">
         <label class="slot" data-zone="decrypt">
-          <span class="slot-title">Drop a .enc file or click to choose</span>
-          <span class="slot-sub mono" data-files="decrypt">No file selected</span>
+          <span class="slot-title">Drop a .enc file here, or click to choose</span>
+          <span class="slot-sub" data-files="decrypt">No file selected</span>
           <input type="file" class="sr-only" data-input="decrypt" />
         </label>
 
-        <p data-el="dec-detected" class="detected mono hidden"></p>
+        <p data-el="dec-detected" class="detected hidden"></p>
 
         <div data-sub="decrypt-password" class="row">
           <input type="password" data-el="dec-pw" placeholder="Password"
@@ -103,9 +106,9 @@ import Base from "../layouts/Base.astro";
 
         <div data-sub="decrypt-key" class="hidden flex-col gap-2">
           <textarea data-el="dec-pub" rows="2" placeholder="Your public key (base64)"
-            class="field mono"></textarea>
+            class="field"></textarea>
           <textarea data-el="dec-sec" rows="2" placeholder="Your secret key (base64)"
-            class="field mono"></textarea>
+            class="field"></textarea>
         </div>
 
         <button data-act="decrypt" class="btn">Decrypt</button>
@@ -115,23 +118,23 @@ import Base from "../layouts/Base.astro";
       <section data-panel="keys" class="panel hidden flex-col gap-5">
         <p class="hint">
           Generate an X25519 keypair. Share your <b>public</b> key so others can encrypt
-          files to you. Keep your <b>secret</b> key private — anyone with it can decrypt
-          those files.
+          files to you. Don't share your <b>secret</b> key &mdash; anyone who has it can
+          decrypt those files.
         </p>
         <button data-act="genkeys" class="btn">Generate keypair</button>
 
         <div data-el="keys-out" class="hidden flex-col gap-5">
           <div class="field-group">
             <span class="label">Public key</span>
-            <textarea data-el="out-pub" rows="2" readonly class="field mono"></textarea>
+            <textarea data-el="out-pub" rows="2" readonly class="field"></textarea>
             <div class="row">
               <button data-act="copy-pub" class="ghost">copy</button>
               <button data-act="dl-pub" class="ghost">download</button>
             </div>
           </div>
           <div class="field-group danger-zone">
-            <span class="label label-danger">⚠ Secret key — keep private</span>
-            <textarea data-el="out-sec" rows="2" readonly class="field mono"></textarea>
+            <span class="label label-danger">Secret key &mdash; don't share it</span>
+            <textarea data-el="out-sec" rows="2" readonly class="field"></textarea>
             <div class="row">
               <button data-act="reveal-sec" class="ghost">reveal</button>
               <button data-act="copy-sec" class="ghost">copy</button>
@@ -147,17 +150,16 @@ import Base from "../layouts/Base.astro";
           <span data-el="status-text" class="label tnum"></span>
           <button data-act="cancel" class="ghost">cancel</button>
         </div>
-        <!-- signature: the chunk-stream magazine -->
         <div class="stream">
-          <div data-el="bar" class="streamfill h-full w-0"></div>
+          <div data-el="bar" class="streamfill w-0"></div>
         </div>
       </div>
 
       <div data-el="result" class="hidden"></div>
     </div>
 
-    <footer class="foot mono">
-      no analytics · no cookies · open source · inspired by hat.sh
+    <footer class="foot">
+      no analytics &middot; no cookies &middot; open source &middot; inspired by hat.sh
     </footer>
   </main>
 </Base>
@@ -168,138 +170,158 @@ import Base from "../layouts/Base.astro";
 </script>
 
 <style>
-  .console {
+  .ledger-wrap {
     width: 100%;
-    max-width: 40rem;
+    max-width: 42rem;
     margin: 0 auto;
     padding: clamp(1.25rem, 4vw, 3rem) 1.25rem 2.5rem;
-  }
-
-  /* The instrument faceplate */
-  .plate {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: clamp(1.25rem, 4vw, 2rem);
-    border-radius: 16px;
-    background: linear-gradient(180deg, var(--plate), var(--plate-2));
-    border: 1px solid var(--line-strong);
-    box-shadow:
-      0 1px 0 color-mix(in srgb, #fff 18%, transparent) inset,
-      0 24px 60px -28px var(--shadow);
-  }
-  [data-reveal] {
-    animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    gap: clamp(1.5rem, 4vw, 2.25rem);
   }
 
-  /* Header */
-  .head {
+  [data-reveal] {
+    animation: rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .console[data-reveal] {
+    animation-delay: 0.06s;
+  }
+
+  /* ── Masthead ────────────────────────────────────────────────────── */
+  .masthead {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.9rem;
+    border-bottom: 2px solid var(--rule-strong);
   }
-  .brand {
+  .mh-left {
     display: flex;
-    gap: 0.75rem;
     align-items: center;
+    gap: 0.65rem;
   }
-  .bezel {
+  .mh-seal {
     display: inline-flex;
-    height: 2.5rem;
-    width: 2.5rem;
+    height: 2rem;
+    width: 2rem;
     align-items: center;
     justify-content: center;
-    border-radius: 10px;
-    color: var(--brass);
-    background: radial-gradient(120% 120% at 30% 20%, var(--brass-soft), transparent 70%),
-      var(--inset);
-    border: 1px solid var(--line-strong);
-    box-shadow: inset 0 1px 2px var(--shadow);
+    color: var(--ink);
+    border: 1.5px solid var(--rule-strong);
   }
-  .bezel svg {
-    height: 1.35rem;
-    width: 1.35rem;
+  .mh-seal svg {
+    height: 1.05rem;
+    width: 1.05rem;
   }
-  .wordmark {
-    font-family: ui-monospace, monospace;
-    font-size: 1.3rem;
-    font-weight: 600;
+  .mh-name {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .mh-title {
+    font-weight: 700;
+    font-size: 1.05rem;
     letter-spacing: -0.01em;
-    line-height: 1;
   }
-  .wordmark span {
-    color: var(--brass-text);
+  .mh-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
   }
-  .spec {
-    margin-top: 0.4rem;
-    font-size: 0.66rem;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-  }
-  .lamp {
+  .lamp-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
-    color: var(--muted);
-    white-space: nowrap;
-  }
-  .led {
-    height: 7px;
-    width: 7px;
-    border-radius: 50%;
-    background: var(--led);
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--led) 60%, transparent);
-    animation: blink 2.4s ease-in-out infinite;
-  }
-
-  .thesis {
-    font-size: 0.92rem;
-    line-height: 1.55;
-    color: var(--muted);
-    max-width: 46ch;
-  }
-
-  /* Tabs + segmented mode control */
-  .tabs,
-  .seg {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 3px;
-    padding: 3px;
-    border-radius: 11px;
-    background: var(--inset);
-    border: 1px solid var(--line);
-    box-shadow: inset 0 1px 3px var(--shadow);
-  }
-  .seg {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .tab,
-  .modebtn {
-    border-radius: 8px;
-    padding: 0.55rem 0.5rem;
-    font-family: ui-monospace, monospace;
-    font-size: 0.74rem;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    justify-content: center;
+    height: 2rem;
+    width: 2rem;
     color: var(--muted);
     background: transparent;
+    border: 1.5px solid var(--rule-strong);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .lamp-toggle:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+  }
+  .lamp-toggle svg {
+    height: 1rem;
+    width: 1rem;
+  }
+  .lamp-toggle .ic-lamp-off {
+    display: none;
+  }
+  :root[data-theme="light"] .lamp-toggle .ic-lamp-off {
+    display: block;
+  }
+  :root[data-theme="light"] .lamp-toggle .ic-lamp-on {
+    display: none;
+  }
+
+  /* ── Console sheet ───────────────────────────────────────────────── */
+  .console {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    padding: clamp(1.1rem, 3.6vw, 1.75rem);
+    background: var(--page);
+    border: 1.5px solid var(--rule-strong);
+    box-shadow: 0 22px 46px -30px var(--shadow);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1.5px solid var(--rule-strong);
+  }
+  .tab {
+    padding: 0.55rem 0.2rem;
+    margin-bottom: -1.5px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    background: transparent;
+    border-bottom: 2.5px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .tab + .tab {
+    margin-left: 1.1rem;
+  }
+  .tab:hover {
+    color: var(--ink);
+  }
+  .tab[aria-selected="true"] {
+    color: var(--ink);
+    border-bottom-color: var(--moss);
+  }
+
+  .seg {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border: 1.5px solid var(--rule-strong);
+    overflow: hidden;
+  }
+  .modebtn {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    background: transparent;
+    border-right: 1.5px solid var(--rule-strong);
     transition: color 0.15s, background 0.15s;
   }
-  .tab:hover,
+  .modebtn:last-child {
+    border-right: none;
+  }
   .modebtn:hover {
     color: var(--ink);
   }
-  .tab[aria-selected="true"],
   .modebtn[aria-selected="true"] {
-    color: var(--brass-text);
-    background: linear-gradient(180deg, var(--plate), var(--plate-2));
-    box-shadow: 0 1px 2px var(--shadow), 0 0 0 1px var(--line) inset;
+    color: var(--moss-ink);
+    background: var(--moss);
   }
 
   /* Layout helpers */
@@ -320,7 +342,7 @@ import Base from "../layouts/Base.astro";
     gap: 0.75rem;
   }
   .gap-5 {
-    gap: 1.25rem;
+    gap: 1.15rem;
   }
   .row {
     display: flex;
@@ -345,9 +367,8 @@ import Base from "../layouts/Base.astro";
   }
 
   .label {
-    font-family: ui-monospace, monospace;
     font-size: 0.66rem;
-    letter-spacing: 0.13em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--muted);
   }
@@ -355,8 +376,8 @@ import Base from "../layouts/Base.astro";
     font-variant-numeric: tabular-nums;
   }
   .hint {
-    font-size: 0.82rem;
-    line-height: 1.5;
+    font-size: 0.84rem;
+    line-height: 1.6;
     color: var(--muted);
   }
   .hint b {
@@ -370,25 +391,23 @@ import Base from "../layouts/Base.astro";
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    padding: 2.25rem 1rem;
+    gap: 0.35rem;
+    padding: 1.9rem 1rem;
     text-align: center;
     cursor: pointer;
-    border-radius: 12px;
-    background: var(--inset);
-    border: 1.5px dashed var(--line-strong);
-    box-shadow: inset 0 1px 3px var(--shadow);
+    background: var(--page-recessed);
+    border: 1.5px dashed var(--rule-strong);
     transition: border-color 0.15s, background 0.15s;
   }
   .slot:hover,
   .slot.is-drag {
-    border-color: var(--brass);
+    border-color: var(--moss);
   }
   .slot.is-drag {
-    background: var(--brass-soft);
+    background: color-mix(in srgb, var(--moss) 12%, var(--page-recessed));
   }
   .slot-title {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 600;
   }
   .slot-sub {
@@ -400,16 +419,14 @@ import Base from "../layouts/Base.astro";
     white-space: nowrap;
   }
 
-  /* Recessed fields */
+  /* Fields */
   .field {
     width: 100%;
-    border-radius: 9px;
-    padding: 0.62rem 0.78rem;
+    padding: 0.6rem 0.72rem;
     font-size: 0.85rem;
     color: var(--ink);
-    background: var(--inset);
-    border: 1px solid var(--line);
-    box-shadow: inset 0 1px 2px var(--shadow);
+    background: var(--page-recessed);
+    border: 1.5px solid var(--rule);
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
@@ -419,25 +436,45 @@ import Base from "../layouts/Base.astro";
     word-break: break-all;
   }
   .field::placeholder {
-    color: color-mix(in srgb, var(--muted) 80%, transparent);
+    color: color-mix(in srgb, var(--muted) 85%, transparent);
   }
-  .field:focus {
-    border-color: var(--brass);
-    box-shadow: inset 0 1px 2px var(--shadow), 0 0 0 3px var(--brass-soft);
+  .field:focus-visible {
+    border-color: var(--moss);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--moss) 25%, transparent);
   }
   .row > .field {
     flex: 1;
   }
 
-  /* Strength meter track (fill is styled by JS via Tailwind utilities) */
+  /* Strength meter */
   .meter-track {
     flex: 1;
-    height: 7px;
-    border-radius: 999px;
-    background: var(--inset);
-    border: 1px solid var(--line);
+    height: 6px;
+    background: var(--page-recessed);
+    border: 1px solid var(--rule);
     overflow: hidden;
   }
+  .meter-fill {
+    height: 100%;
+    transition: width 0.2s ease, background 0.2s ease;
+    background: var(--muted);
+  }
+  .meter-fill.score-0 {
+    background: var(--muted);
+  }
+  .meter-fill.score-1 {
+    background: var(--rust);
+  }
+  .meter-fill.score-2 {
+    background: var(--gold);
+  }
+  .meter-fill.score-3 {
+    background: color-mix(in srgb, var(--moss) 70%, var(--gold));
+  }
+  .meter-fill.score-4 {
+    background: var(--moss);
+  }
+
   .range-row {
     display: flex;
     align-items: center;
@@ -445,30 +482,26 @@ import Base from "../layouts/Base.astro";
   }
   .range {
     flex: 1;
-    accent-color: var(--brass);
+    accent-color: var(--moss);
   }
 
-  /* Buttons */
+  /* Buttons — the primary is an ink-stamped "posted" mark */
   .btn {
-    border-radius: 10px;
-    padding: 0.72rem 1rem;
-    font-weight: 600;
-    font-size: 0.92rem;
-    letter-spacing: 0.01em;
-    color: var(--on-brass);
-    background: linear-gradient(180deg,
-      color-mix(in srgb, var(--brass) 92%, white),
-      var(--brass));
-    border: 1px solid color-mix(in srgb, var(--brass) 70%, black);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 45%, transparent),
-      0 2px 6px -2px var(--shadow);
-    transition: filter 0.15s, transform 0.05s;
+    padding: 0.7rem 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--moss-ink);
+    background: var(--moss);
+    border: 1.5px solid color-mix(in srgb, var(--moss) 70%, black);
+    transition: filter 0.15s, transform 0.08s;
   }
   .btn:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.08);
   }
   .btn:active {
-    transform: translateY(1px);
+    transform: scale(0.98);
   }
   .btn:disabled {
     opacity: 0.5;
@@ -476,108 +509,94 @@ import Base from "../layouts/Base.astro";
   }
 
   .ghost {
-    border-radius: 8px;
-    padding: 0.42rem 0.7rem;
-    font-family: ui-monospace, monospace;
-    font-size: 0.72rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.71rem;
     color: var(--muted);
     background: transparent;
-    border: 1px solid var(--line);
+    border: 1.5px solid var(--rule-strong);
     transition: color 0.15s, border-color 0.15s;
   }
   .ghost:hover {
-    color: var(--brass-text);
-    border-color: var(--brass);
+    color: var(--moss);
+    border-color: var(--moss);
   }
-  .ghost-brass {
-    color: var(--brass-text);
-    border-color: color-mix(in srgb, var(--brass) 45%, transparent);
+  .ghost-moss {
+    color: var(--moss);
+    border-color: color-mix(in srgb, var(--moss) 55%, transparent);
   }
 
   .detected {
     font-size: 0.66rem;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--brass-text);
+    color: var(--moss);
+    padding: 0.38rem 0.65rem;
+    border: 1.5px solid color-mix(in srgb, var(--moss) 45%, transparent);
+  }
+  .detected:not(.hidden) {
+    display: inline-block;
   }
 
-  .danger-zone .field:focus {
-    border-color: var(--danger);
-    box-shadow: inset 0 1px 2px var(--shadow),
-      0 0 0 3px color-mix(in srgb, var(--danger) 22%, transparent);
+  .danger-zone .field:focus-visible {
+    border-color: var(--rust);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--rust) 22%, transparent);
   }
   .label-danger {
-    color: var(--danger);
+    color: var(--rust);
   }
 
-  /* Signature: the chunk-stream magazine */
+  /* Progress: a running tally */
   .status {
-    gap: 0.6rem;
+    gap: 0.55rem;
   }
   .stream {
-    height: 14px;
-    border-radius: 5px;
-    padding: 0;
-    background-color: var(--inset);
-    background-image: repeating-linear-gradient(
-      90deg,
-      var(--line) 0 9px,
-      transparent 9px 12px
-    );
-    background-size: 12px 100%;
-    border: 1px solid var(--line);
-    box-shadow: inset 0 1px 2px var(--shadow);
+    height: 8px;
+    background-color: var(--page-recessed);
+    border: 1px solid var(--rule);
     overflow: hidden;
   }
   .streamfill {
-    background-image: repeating-linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--brass) 88%, white) 0 9px,
-      transparent 9px 12px
-    );
-    background-size: 12px 100%;
-    box-shadow: 0 0 8px -1px var(--brass-soft);
+    height: 100%;
+    background: var(--moss);
     transition: width 0.15s linear;
   }
 
-  /* Result banner (base; ok/error palette is set inline by JS too) */
+  /* Result banner */
   [data-el="result"]:not(.hidden) {
     display: block;
-    border-radius: 9px;
-    padding: 0.7rem 0.9rem;
+    padding: 0.65rem 0.85rem;
     font-size: 0.85rem;
+    border: 1.5px solid transparent;
+  }
+  [data-el="result"].result-ok {
+    color: var(--moss);
+    border-color: color-mix(in srgb, var(--moss) 45%, transparent);
+  }
+  [data-el="result"].result-err {
+    color: var(--rust);
+    border-color: color-mix(in srgb, var(--rust) 45%, transparent);
   }
 
   .foot {
-    margin-top: 1.5rem;
     text-align: center;
     font-size: 0.64rem;
-    letter-spacing: 0.06em;
-    color: color-mix(in srgb, var(--muted) 75%, transparent);
+    letter-spacing: 0.02em;
+    color: color-mix(in srgb, var(--muted) 85%, transparent);
   }
 
   /* Motion */
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(10px);
     }
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  @keyframes blink {
-    0%, 100% {
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--led) 55%, transparent);
-    }
-    50% {
-      box-shadow: 0 0 0 4px transparent;
-    }
-  }
   @media (prefers-reduced-motion: reduce) {
     [data-reveal],
-    .led,
     .streamfill,
     .btn {
       animation: none;

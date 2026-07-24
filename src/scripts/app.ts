@@ -47,6 +47,30 @@ export function initApp(): void {
     abort: null,
   };
 
+  // --- theme ---
+  const THEME_KEY = "encryptme-theme";
+  const applyTheme = (theme: "dark" | "light") => {
+    document.documentElement.dataset.theme = theme;
+  };
+  const storedTheme = (() => {
+    try {
+      return localStorage.getItem(THEME_KEY);
+    } catch {
+      return null;
+    }
+  })();
+  const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)").matches;
+  applyTheme(storedTheme === "light" || storedTheme === "dark" ? storedTheme : prefersLight ? "light" : "dark");
+  $('[data-act="toggle-theme"]')!.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    applyTheme(next);
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch {
+      /* storage unavailable (private mode); theme just won't persist */
+    }
+  });
+
   // --- tabs ---
   const selectTab = (name: string) => {
     $$<HTMLButtonElement>(".tab").forEach((b) =>
@@ -156,11 +180,10 @@ export function initApp(): void {
   const encPw2 = $<HTMLInputElement>('[data-el="enc-pw2"]')!;
   const meter = $('[data-el="pw-meter"]')!;
   const meterLabel = $('[data-el="pw-label"]')!;
-  const colors = ["bg-slate-400", "bg-red-500", "bg-amber-500", "bg-lime-500", "bg-emerald-500"];
   const updateMeter = () => {
     const { score, label } = estimateStrength(encPw.value);
     meter.style.width = `${(score / 4) * 100}%`;
-    meter.className = `h-full rounded-full transition-all ${colors[score]}`;
+    meter.className = `meter-fill score-${score}`;
     meterLabel.textContent = label;
   };
   encPw.addEventListener("input", updateMeter);
@@ -207,11 +230,7 @@ export function initApp(): void {
   };
   const showResult = (text: string, ok: boolean) => {
     result.textContent = text;
-    result.className = `rounded-lg px-4 py-3 text-sm ${
-      ok
-        ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-500/30"
-        : "bg-red-500/10 text-red-700 dark:text-red-400 ring-1 ring-red-500/30"
-    }`;
+    result.className = ok ? "result-ok" : "result-err";
     result.classList.remove("hidden");
   };
   const progress = (read: number, total: number) => {
