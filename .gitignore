@@ -5,3 +5,7 @@ test-results/
 playwright-report/
 *.log
 .DS_Store
+
+# Pix Agent
+.pi/
+.pi-lens/
